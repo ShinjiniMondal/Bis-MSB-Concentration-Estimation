@@ -179,20 +179,32 @@ def normalize_and_extract(wavelengths, absorbance, norm_wl):
 # Function to integrate the area under the absorbance curve given as input in the form of a .spc file
 
 def compute_area(wavelengths, absorbance, start_wl, end_wl):
-    mask = (wavelengths >= start_wl) & (wavelengths <= end_wl) 
-    x = wavelengths[mask]
-    y = absorbance[mask]
+    """
+    Compute area under the curve consistently with the plotting code.
+    Uses the same 'st' and 'ed' index logic (strict >start and <end),
+    and handles descending wavelength arrays.
+    """
+    x = np.asarray(wavelengths)
+    y = np.asarray(absorbance)
 
-    # Ensure ascending order of wavelengths (else the wavelengths are in descending order and it leads to negative sign during area calculation)
+    # Handle descending wavelengths
     if x[0] > x[-1]:
         x = x[::-1]
         y = y[::-1]
 
-    # Compute area by simpson method
-    area_simpson = sp.integrate.simpson(y, x)
-    return area_simpson
+    # Replicate your st/ed selection
+    st = np.where(x > start_wl)[0][0]   # first index where x > start_wl
+    ed = np.where(x < end_wl)[0][-1]    # last index where x < end_wl
+
+    x_seg = x[st:ed]  # matches your plotting slice (excludes endpoints)
+    y_seg = y[st:ed]
+
+    print(f"Integrating from {x_seg[0]:.2f} nm to {x_seg[-1]:.2f} nm, {len(x_seg)} points")
+
+    return sp.integrate.simpson(y_seg, x_seg)
 
 # Main function that takes input from user in the order - .spc file containing UV-Vis Data, start and stop wavlengths of the input spectrum plot, interval at which the data is taken, normalization wavelength.
+
 def main():
     if len(sys.argv) != 6:
         print("Usage: python bis_calculate_concentration.py <file.spc> <start_wl> <end_wl> <norm_wl>")
