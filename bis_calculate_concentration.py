@@ -154,7 +154,6 @@ class Data:
                                         and not j in string.whitespace])[1:]
 
 # Function which is used for fitting the calibration curve with forced zero intercept. Here it is used to find the residuals.  
-#       
 def lin_zero(x, m):
     return m * x
 
