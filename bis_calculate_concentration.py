@@ -164,8 +164,6 @@ def compute_sigma_res(areas, concentrations, slope, intercept=0.0):
     fitted_vals = lin_zero(areas, slope) # To calculate the concentrations of the original samples used to geenrate calibration curve by interpolating the area under curve to the generated calibration curve to estimate the concentration.
     residuals = concentrations - fitted_vals # actual concentrations
     sigma_res = np.sqrt(np.sum(residuals**2) / (len(areas) - 2)) #calculating the uncertainty due to calibration residuals
-    for xi, yi, fi in zip(areas, concentrations, fitted_vals):
-        print(f"x = {xi:.5f}, observed y = {yi:.5f}, fitted y = {fi:.5f}, residual = {yi-fi:.5f}")
     print(f"Sum of squared residuals = {np.sum(residuals**2):.5f}")
     return sigma_res
 
@@ -198,8 +196,6 @@ def compute_area(wavelengths, absorbance, start_wl, end_wl):
 
     x_seg = x[st:ed]  # matches your plotting slice (excludes endpoints)
     y_seg = y[st:ed]
-
-    print(f"Integrating from {x_seg[0]:.2f} nm to {x_seg[-1]:.2f} nm, {len(x_seg)} points")
 
     return sp.integrate.simpson(y_seg, x_seg)
 
